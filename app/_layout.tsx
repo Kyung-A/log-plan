@@ -5,7 +5,7 @@ import "react-native-reanimated";
 import "../global.css";
 
 export const unstable_settings = {
-  anchor: "(tabs)",
+  anchor: "main",
 };
 
 export default function RootLayout() {
@@ -15,7 +15,7 @@ export default function RootLayout() {
         headerShadowVisible: false,
       }}
     >
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="create" options={{ headerShown: false }} />
       <Stack.Screen
         name="sub-detail"

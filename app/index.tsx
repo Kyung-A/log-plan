@@ -14,7 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const sectionListData = [
   {
     id: 1,
-    title: "몸무게 48kg 달성",
+    title: "몸무게 4123128kg 달성 몸무게 4123128kg 달성",
     deadline: "2025-06-01",
     totalRate: 32,
     data: [
@@ -40,7 +40,7 @@ const sectionListData = [
   },
   {
     id: 2,
-    title: "몸무게 4123128kg 달성",
+    title: "몸무게 48kg 달성",
     deadline: "2025-06-01",
     totalRate: 100,
     data: [
@@ -108,7 +108,7 @@ export default function HomeScreen() {
       >
         <View>
           <Text
-            className={`text-lg font-semibold ${isInverted ? "text-white" : "text-pink"}`}
+            className={`text-lg font-semibold max-w-72 ${isInverted ? "text-white" : "text-pink"}`}
           >
             {item.title}
           </Text>
@@ -154,7 +154,7 @@ export default function HomeScreen() {
         </TouchableOpacity>
 
         {isExpanded && (
-          <View className="w-[90%] -mt-2 mx-auto -z-10 border border-latte rounded-b-xl py-4 pt-6">
+          <View className="w-[90%] -mt-4 mx-auto -z-10 border border-latte rounded-b-xl py-4 pt-6">
             {item.data.map((subItem) => (
               <View
                 key={subItem.id}
@@ -172,7 +172,7 @@ export default function HomeScreen() {
                     activeOpacity={0.5}
                     onPress={() => router.push("/sub-detail")}
                   >
-                    <Text className="flex-1 text-lg text-balanc text-latte">
+                    <Text className="flex-1 text-lg max-w-52 text-balanc text-latte">
                       {subItem.title}
                     </Text>
                   </TouchableOpacity>
