@@ -1,4 +1,4 @@
-import Ionicons from "@expo/vector-icons/Ionicons";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { router } from "expo-router";
 import { useCallback, useState } from "react";
 import {
@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const sectionListData = [
   {
@@ -57,9 +58,9 @@ const sectionListData = [
       },
       {
         id: 23,
-        title: "마라톤 대회 3회 출전하기",
-        goal: 3,
-        count: 1,
+        title: "마라톤 대회 3회 출전하기 마라톤 대회 3회 출전하기",
+        goal: 100,
+        count: 200,
       },
     ],
   },
@@ -138,7 +139,7 @@ export default function HomeScreen() {
           onLayout={onLayout}
           onPress={() => toggleSection(item.id)}
           activeOpacity={0.9}
-          className="w-full border border-pink bg-beige rounded-full relative overflow-hidden justify-center"
+          className="relative justify-center w-full overflow-hidden border rounded-full border-pink bg-beige"
         >
           <ContentText isInverted={false} />
 
@@ -146,7 +147,7 @@ export default function HomeScreen() {
             style={{
               width: `${item.totalRate}%`,
             }}
-            className="overflow-hidden bg-pink bottom- top-0 left-0 absolute"
+            className="absolute top-0 left-0 overflow-hidden bg-pink bottom-"
           >
             <ContentText isInverted={true} />
           </View>
@@ -157,16 +158,36 @@ export default function HomeScreen() {
             {item.data.map((subItem) => (
               <View
                 key={subItem.id}
-                className="py-2 px-4 flex-row justify-between items-center"
+                className="flex-row items-start justify-between flex-1 px-4 py-2"
               >
-                <Text className="text-lg text-latte">{subItem.title}</Text>
-                <View className="flex-row justify-center items-center">
+                <View className="flex-row items-start flex-1 gap-x-2">
+                  <Pressable className="pt-[2.5px]">
+                    <MaterialIcons
+                      name="radio-button-unchecked"
+                      size={20}
+                      color="#a09086"
+                    />
+                  </Pressable>
+                  <TouchableOpacity
+                    activeOpacity={0.5}
+                    onPress={() => router.push("/sub-detail")}
+                  >
+                    <Text className="flex-1 text-lg text-balanc text-latte">
+                      {subItem.title}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                <TouchableOpacity
+                  activeOpacity={0.5}
+                  onPress={() => router.push("/sub-detail")}
+                  className="flex-row items-center justify-center"
+                >
                   <Text className="text-lg text-latte">{subItem.goal}</Text>
-                  <Text className="text-lg text-latte mx-1">/</Text>
-                  <Text className="text-lg text-latte font-semibold">
+                  <Text className="mx-1 text-lg text-latte">/</Text>
+                  <Text className="text-lg font-semibold text-latte">
                     {subItem.count}
                   </Text>
-                </View>
+                </TouchableOpacity>
               </View>
             ))}
           </View>
@@ -176,18 +197,20 @@ export default function HomeScreen() {
   };
 
   return (
-    <View className="flex-1 bg-beige p-6">
-      <View className="mb-6 flex-row items-center justify-between">
-        <Text className="text-3xl font-semibold px-2">목표</Text>
-        <Pressable onPress={() => router.push("/create")}>
-          <Ionicons name="add" size={26} color="black" />
-        </Pressable>
+    <SafeAreaView className="flex-1 bg-beige" edges={["top", "left", "right"]}>
+      <View className="flex-1 p-6 bg-beige">
+        <View className="flex-row items-center justify-between mb-6">
+          <Text className="px-2 text-3xl font-semibold">목표</Text>
+          <Pressable onPress={() => router.navigate("/create")}>
+            <MaterialIcons name="add" size={26} color="black" />
+          </Pressable>
+        </View>
+        <FlatList
+          data={sectionListData}
+          renderItem={renderSection}
+          keyExtractor={(item) => item.title}
+        />
       </View>
-      <FlatList
-        data={sectionListData}
-        renderItem={renderSection}
-        keyExtractor={(item) => item.title}
-      />
-    </View>
+    </SafeAreaView>
   );
 }
