@@ -47,7 +47,7 @@ LocaleConfig.locales["ko"] = {
 
 LocaleConfig.defaultLocale = "ko";
 
-export default function SubDetail() {
+export default function SubDetailScreen() {
   return (
     <View className="flex-1 p-6 bg-beige">
       <View className="flex-row items-center justify-between pb-6">
@@ -70,7 +70,7 @@ export default function SubDetail() {
           >
             <Feather name="trash-2" size={24} color="#b91c1c" />
           </Pressable>
-          <Pressable onPress={() => router.back()}>
+          <Pressable onPress={() => router.navigate("/sub-edit")}>
             <Feather name="edit" size={22} color="black" />
           </Pressable>
         </View>

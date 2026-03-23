@@ -8,7 +8,7 @@ import { useState } from "react";
 import { FlatList, Pressable, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function Create() {
+export default function CreateScreen() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [subList, setSubList] = useState<
     { id: string; title: string; count: number }[]

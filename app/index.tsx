@@ -1,3 +1,4 @@
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { router } from "expo-router";
 import { useCallback, useState } from "react";
@@ -183,7 +184,11 @@ export default function HomeScreen() {
                   className="flex-row items-center justify-center"
                 >
                   <Text className="text-lg text-latte">{subItem.goal}</Text>
-                  <Text className="mx-1 text-lg text-latte">/</Text>
+                  <MaterialCommunityIcons
+                    name="slash-forward"
+                    size={16}
+                    color="#a09086"
+                  />
                   <Text className="text-lg font-semibold text-latte">
                     {subItem.count}
                   </Text>
