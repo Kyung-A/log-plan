@@ -68,7 +68,7 @@ export default function SubDetailScreen() {
               ]);
             }}
           >
-            <Feather name="trash-2" size={24} color="#b91c1c" />
+            <Feather name="trash-2" size={24} color="black" />
           </Pressable>
           <Pressable onPress={() => router.navigate("/sub-edit")}>
             <Feather name="edit" size={22} color="black" />
