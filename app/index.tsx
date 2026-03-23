@@ -204,12 +204,24 @@ export default function HomeScreen() {
   return (
     <SafeAreaView className="flex-1 bg-beige" edges={["top", "left", "right"]}>
       <View className="flex-1 p-6 bg-beige">
-        <View className="flex-row items-center justify-between mb-6">
+        <View className="flex-row items-center justify-between mb-3">
           <Text className="px-2 text-3xl font-semibold">목표</Text>
           <Pressable onPress={() => router.navigate("/create")}>
             <MaterialIcons name="add" size={26} color="black" />
           </Pressable>
         </View>
+
+        <View className="flex-row items-center mb-6 gap-x-2">
+          {["전체", "진행중", "완료"].map((v) => (
+            <TouchableOpacity
+              key={v}
+              className="px-4 py-1 rounded-full bg-zinc-300"
+            >
+              <Text className="text-sm">{v}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
         <FlatList
           data={sectionListData}
           renderItem={renderSection}
