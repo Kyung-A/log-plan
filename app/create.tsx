@@ -80,13 +80,13 @@ export default function CreateScreen() {
                   </Pressable>
 
                   <TextInput
-                    className="flex-1 pb-1 text-xl"
+                    className="flex-1 text-xl leading-6"
                     placeholder="세부 계획"
                     maxLength={25}
                   />
                   <View className="flex-row items-center justify-center w-16 gap-x-1">
                     <TextInput
-                      className="flex-1 p-0 pb-1 text-xl text-right"
+                      className="flex-1 text-xl leading-6 text-right"
                       placeholder="0"
                       keyboardType="numeric"
                       maxLength={3}

@@ -200,7 +200,7 @@ export default function HomeScreen() {
               ))}
             </View>
 
-            <View className="flex-row items-center w-24 ml-auto border border-t-0 rounded-b-lg border-latte">
+            <View className="flex-row items-center w-40 ml-auto border border-t-0 rounded-b-lg border-latte">
               <TouchableOpacity
                 onPress={() => {
                   Alert.alert("삭제", "정말 삭제하시겠습니까?", [
@@ -212,7 +212,7 @@ export default function HomeScreen() {
                     },
                   ]);
                 }}
-                className="w-1/2 py-1 border-r border-latte"
+                className="w-1/3 py-1 border-r border-latte"
               >
                 <Feather
                   name="trash-2"
@@ -223,10 +223,21 @@ export default function HomeScreen() {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => router.navigate("/edit")}
-                className="w-1/2 py-1"
+                className="w-1/3 py-1 border-r border-latte"
               >
                 <Feather
                   name="edit"
+                  size={18}
+                  color="#a09086"
+                  className="mx-auto"
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => router.navigate("/detail")}
+                className="w-1/3 py-1"
+              >
+                <MaterialCommunityIcons
+                  name="view-dashboard"
                   size={18}
                   color="#a09086"
                   className="mx-auto"

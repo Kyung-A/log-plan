@@ -1,4 +1,5 @@
 import Feather from "@expo/vector-icons/Feather";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { router } from "expo-router";
 import { Alert, Pressable, Text, View } from "react-native";
 import { Calendar, LocaleConfig } from "react-native-calendars";
@@ -55,25 +56,20 @@ export default function SubDetailScreen() {
           <Feather name="x" size={26} color="black" />
         </Pressable>
 
-        <View className="flex-row items-center gap-x-4">
-          <Pressable
-            onPress={() => {
-              Alert.alert("삭제", "정말 삭제하시겠습니까?", [
-                { text: "예", onPress: () => console.log("") },
-                {
-                  text: "아니오",
-                  onPress: () => console.log(""),
-                  style: "cancel",
-                },
-              ]);
-            }}
-          >
-            <Feather name="trash-2" size={24} color="black" />
-          </Pressable>
-          <Pressable onPress={() => router.navigate("/sub-edit")}>
-            <Feather name="edit" size={22} color="black" />
-          </Pressable>
-        </View>
+        <Pressable
+          onPress={() => {
+            Alert.alert("삭제", "정말 삭제하시겠습니까?", [
+              { text: "예", onPress: () => console.log("") },
+              {
+                text: "아니오",
+                onPress: () => console.log(""),
+                style: "cancel",
+              },
+            ]);
+          }}
+        >
+          <Feather name="trash-2" size={24} color="black" />
+        </Pressable>
       </View>
 
       <Text className="text-2xl font-semibold">스피닝 100회 하기</Text>
@@ -123,7 +119,17 @@ export default function SubDetailScreen() {
 
       <View className="mt-6">
         <Text className="text-lg font-semibold">완료 횟수</Text>
-        <Text className="text-lg">10 / 50</Text>
+
+        <View className="flex-row items-center">
+          <Text className="text-lg">10</Text>
+          <MaterialCommunityIcons
+            name="slash-forward"
+            size={16}
+            color="#a1a1aa"
+          />
+
+          <Text className="text-lg">50</Text>
+        </View>
       </View>
     </View>
   );
