@@ -4,15 +4,49 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import * as Crypto from "expo-crypto";
 import { router } from "expo-router";
-import { useState } from "react";
+import { useSQLiteContext } from "expo-sqlite";
+import { useCallback, useState } from "react";
 import { FlatList, Pressable, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+interface IGoal {
+  title: string;
+  endDate: Date;
+  taskList: { id: string; title: string; targetCount: number }[];
+}
+
 export default function CreateScreen() {
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [subList, setSubList] = useState<
-    { id: string; title: string; count: number }[]
-  >([]);
+  const db = useSQLiteContext();
+
+  const [form, setForm] = useState<IGoal>({
+    title: "",
+    endDate: new Date(),
+    taskList: [],
+  });
+
+  const addNewGoal = useCallback(
+    async (formData: IGoal) => {
+      const { title, endDate, taskList } = formData;
+      const dateString = endDate.toISOString().split("T")[0];
+
+      await db.withTransactionAsync(async () => {
+        const goalResult = await db.runAsync(
+          `INSERT INTO goals (title, end_date) VALUES (?, ?)`,
+          [title, dateString],
+        );
+
+        const newGoalId = goalResult.lastInsertRowId;
+
+        for (const task of taskList) {
+          await db.runAsync(
+            `INSERT INTO tasks (goal_id, title, target_count) VALUES (?, ?, ?)`,
+            [newGoalId, task.title, task.targetCount],
+          );
+        }
+      });
+    },
+    [db],
+  );
 
   return (
     <SafeAreaView className="flex-1 bg-beige" edges={["top", "left", "right"]}>
@@ -29,7 +63,7 @@ export default function CreateScreen() {
             목표 추가
           </Text>
           <Pressable
-            // onPress={() => router.back()}
+            onPress={() => addNewGoal(form)}
             className="absolute z-10 flex-row items-center gap-x-1 right-4"
           >
             <Text className="text-xl font-semibold text-pink">등록</Text>
@@ -38,6 +72,10 @@ export default function CreateScreen() {
 
         <View className="p-6">
           <TextInput
+            defaultValue={form.title}
+            onChangeText={(text) =>
+              setForm((prev) => ({ ...prev, title: text }))
+            }
             className="py-2 text-2xl font-semibold"
             placeholder="새로운 목표"
             maxLength={25}
@@ -50,10 +88,10 @@ export default function CreateScreen() {
               mode="date"
               display="default"
               locale="ko-KR"
-              value={selectedDate}
+              value={form.endDate}
               onChange={(event, date) => {
                 if (date) {
-                  setSelectedDate(date);
+                  setForm((prev) => ({ ...prev, endDate: date }));
                 }
               }}
               minimumDate={new Date()}
@@ -64,15 +102,15 @@ export default function CreateScreen() {
             <Text className="text-xl">계획</Text>
 
             <FlatList
-              data={subList}
+              data={form.taskList}
               renderItem={({ item }) => (
                 <View className="flex-row items-center justify-between mb-2">
                   <Pressable
                     onPress={() => {
-                      setSubList((prev) => {
-                        const remove = prev.filter((v) => v.id !== item.id);
-                        return remove;
-                      });
+                      setForm((prev) => ({
+                        ...prev,
+                        taskList: prev.taskList.filter((v) => v.id !== item.id),
+                      }));
                     }}
                     className="w-7"
                   >
@@ -80,12 +118,34 @@ export default function CreateScreen() {
                   </Pressable>
 
                   <TextInput
+                    defaultValue={item.title}
+                    onChangeText={(text) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        taskList: prev.taskList.map((v) =>
+                          v.id === item.id ? { ...v, title: text } : v,
+                        ),
+                      }))
+                    }
                     className="flex-1 text-xl leading-6"
                     placeholder="세부 계획"
                     maxLength={25}
                   />
                   <View className="flex-row items-center justify-center w-16 gap-x-1">
                     <TextInput
+                      defaultValue={
+                        item.targetCount ? String(item.targetCount) : ""
+                      }
+                      onChangeText={(text) =>
+                        setForm((prev) => ({
+                          ...prev,
+                          taskList: prev.taskList.map((v) =>
+                            v.id === item.id
+                              ? { ...v, targetCount: Number(text) }
+                              : v,
+                          ),
+                        }))
+                      }
                       className="flex-1 text-xl leading-6 text-right"
                       placeholder="0"
                       keyboardType="numeric"
@@ -102,10 +162,13 @@ export default function CreateScreen() {
             <Pressable
               onPress={() => {
                 const id = Crypto.randomUUID();
-                setSubList((prev) => [
+                setForm((prev) => ({
                   ...prev,
-                  { id: id, title: "", count: 0 },
-                ]);
+                  taskList: [
+                    ...prev.taskList,
+                    { id: id, title: "", targetCount: 0 },
+                  ],
+                }));
               }}
               className="items-center w-12 py-1 mt-1 rounded-full bg-pink"
             >
