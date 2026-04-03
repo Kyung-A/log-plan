@@ -4,5 +4,5 @@ export interface ITask {
   title: string;
   target_count: number;
   current_count: number;
-  created_at: string;
+  created_at?: string;
 }
