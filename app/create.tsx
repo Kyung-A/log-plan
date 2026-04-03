@@ -25,25 +25,33 @@ export default function CreateScreen() {
   });
 
   const addNewGoal = useCallback(
-    async (formData: IGoal) => {
+    async (formData: IGoal): Promise<boolean> => {
       const { title, endDate, taskList } = formData;
       const dateString = endDate.toISOString().split("T")[0];
+      const uuid = Crypto.randomUUID();
 
-      await db.withTransactionAsync(async () => {
-        const goalResult = await db.runAsync(
-          `INSERT INTO goals (title, end_date) VALUES (?, ?)`,
-          [title, dateString],
-        );
-
-        const newGoalId = goalResult.lastInsertRowId;
-
-        for (const task of taskList) {
-          await db.runAsync(
-            `INSERT INTO tasks (goal_id, title, target_count) VALUES (?, ?, ?)`,
-            [newGoalId, task.title, task.targetCount],
+      try {
+        await db.withTransactionAsync(async () => {
+          const goalResult = await db.runAsync(
+            `INSERT INTO goals (id, title, end_date) VALUES (?, ?, ?)`,
+            [uuid, title, dateString],
           );
-        }
-      });
+
+          const newGoalId = goalResult.lastInsertRowId;
+
+          for (const task of taskList) {
+            await db.runAsync(
+              `INSERT INTO tasks (goal_id, id, title, target_count) VALUES (?, ?, ?, ?)`,
+              [newGoalId, task.id, task.title, task.targetCount],
+            );
+          }
+        });
+
+        return true;
+      } catch (error) {
+        console.error("목표 생성 실패:", error);
+        return false;
+      }
     },
     [db],
   );
@@ -63,7 +71,12 @@ export default function CreateScreen() {
             목표 추가
           </Text>
           <Pressable
-            onPress={() => addNewGoal(form)}
+            onPress={async () => {
+              const result = await addNewGoal(form);
+              if (result) {
+                router.navigate("/");
+              }
+            }}
             className="absolute z-10 flex-row items-center gap-x-1 right-4"
           >
             <Text className="text-xl font-semibold text-pink">등록</Text>
