@@ -5,7 +5,13 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { router } from "expo-router";
 import { Alert, Pressable, Text, TouchableOpacity, View } from "react-native";
 
-export const GoalTask = ({ task }: { task: ITask[] }) => {
+export const GoalTask = ({
+  goalId,
+  task,
+}: {
+  goalId: string;
+  task: ITask[];
+}) => {
   return (
     <View className="w-[90%] -mt-4 mx-auto -z-10">
       <View className="py-4 pt-6 border rounded-bl-lg border-latte">
@@ -74,7 +80,7 @@ export const GoalTask = ({ task }: { task: ITask[] }) => {
           />
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => router.navigate("/edit")}
+          onPress={() => router.navigate(`/${goalId}/edit`)}
           className="w-1/3 py-1 border-r border-latte"
         >
           <Feather name="edit" size={18} color="#a09086" className="mx-auto" />

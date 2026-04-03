@@ -24,23 +24,22 @@ export default function RootLayout() {
         <Stack
           screenOptions={{
             headerShadowVisible: false,
+            headerShown: false,
           }}
         >
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="create" options={{ headerShown: false }} />
-          <Stack.Screen name="detail" options={{ headerShown: false }} />
+          <Stack.Screen name="index" />
+          <Stack.Screen name="create" />
+          <Stack.Screen name="[id]/index" />
           <Stack.Screen
-            name="edit"
+            name="[id]/edit"
             options={{
               presentation: "modal",
-              headerShown: false,
             }}
           />
           <Stack.Screen
             name="sub-detail"
             options={{
               presentation: "modal",
-              headerShown: false,
             }}
           />
         </Stack>

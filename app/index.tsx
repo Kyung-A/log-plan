@@ -51,7 +51,7 @@ const renderSection = ({
   return (
     <View className="w-full mb-2">
       <Goal data={item} setExpandedSections={setExpandedSections} />
-      {isExpanded && <GoalTask task={item.tasks} />}
+      {isExpanded && <GoalTask goalId={item.id} task={item.tasks} />}
     </View>
   );
 };

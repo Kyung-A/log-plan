@@ -28,21 +28,19 @@ export default function CreateScreen() {
     async (formData: IGoal): Promise<boolean> => {
       const { title, endDate, taskList } = formData;
       const dateString = endDate.toISOString().split("T")[0];
-      const uuid = Crypto.randomUUID();
+      const goalId = Crypto.randomUUID();
 
       try {
         await db.withTransactionAsync(async () => {
-          const goalResult = await db.runAsync(
+          await db.runAsync(
             `INSERT INTO goals (id, title, end_date) VALUES (?, ?, ?)`,
-            [uuid, title, dateString],
+            [goalId, title, dateString],
           );
-
-          const newGoalId = goalResult.lastInsertRowId;
 
           for (const task of taskList) {
             await db.runAsync(
               `INSERT INTO tasks (goal_id, id, title, target_count) VALUES (?, ?, ?, ?)`,
-              [newGoalId, task.id, task.title, task.targetCount],
+              [goalId, task.id, task.title, task.targetCount],
             );
           }
         });
