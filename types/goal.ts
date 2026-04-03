@@ -8,5 +8,8 @@ export interface IGoal {
   retrospective: string | null;
   is_completed: boolean;
   created_at: string;
+  total_current: number;
+  total_target: number;
+  achievement_rate: number;
   tasks: ITask[];
 }

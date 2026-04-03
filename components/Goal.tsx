@@ -37,7 +37,7 @@ const ContentText = ({
     <Text
       className={`text-xl font-semibold ${isInverted ? "text-white" : "text-pink"}`}
     >
-      {data.totalRate}%
+      {data.achievement_rate}%
     </Text>
   </View>
 );
@@ -56,15 +56,18 @@ export const Goal = ({
     setParentWidth(width);
   };
 
-  const toggleSection = useCallback((id: string) => {
-    setExpandedSections((prevSections) => {
-      if (prevSections.includes(id)) {
-        return prevSections.filter((t) => t !== id);
-      } else {
-        return [...prevSections, id];
-      }
-    });
-  }, []);
+  const toggleSection = useCallback(
+    (id: string) => {
+      setExpandedSections((prevSections) => {
+        if (prevSections.includes(id)) {
+          return prevSections.filter((t) => t !== id);
+        } else {
+          return [...prevSections, id];
+        }
+      });
+    },
+    [setExpandedSections],
+  );
 
   return (
     <TouchableOpacity
@@ -77,7 +80,7 @@ export const Goal = ({
 
       <View
         style={{
-          width: `${data.totalRate}%`,
+          width: `${data.achievement_rate}%`,
         }}
         className="absolute top-0 left-0 overflow-hidden bg-pink bottom-"
       >
