@@ -1,4 +1,5 @@
 import { ddayCounter } from "@/lib/ddayCounter";
+import { formatDateToInsert } from "@/lib/formatDateToInsert";
 import { IGoal } from "@/types/goal";
 import { useCallback, useState } from "react";
 import { LayoutChangeEvent, Text, TouchableOpacity, View } from "react-native";
@@ -26,12 +27,12 @@ const ContentText = ({
         <Text
           className={`text-base ${isInverted ? "text-white/70" : "text-zinc-400"}`}
         >
-          {String(data.end_date)}
+          {formatDateToInsert(data.end_date)}
         </Text>
         <Text
           className={`text-base ml-2 font-semibold ${isInverted ? "text-white/80" : "text-zinc-400"}`}
         >
-          {ddayCounter(data.end_date as string)}
+          {ddayCounter(formatDateToInsert(data.end_date))}
         </Text>
       </View>
     </View>

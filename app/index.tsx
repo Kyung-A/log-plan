@@ -81,6 +81,19 @@ export default function HomeScreen() {
     }
   };
 
+  //   const checkTask = async (taskId: number) => {
+  //   await db.withTransactionAsync(async () => {
+  //     // 1. 일일 로그 기록 (히트맵용)
+  //     await db.runAsync('INSERT INTO daily_logs (task_id) VALUES (?)', [taskId]);
+
+  //     // 2. 세부 계획 현재 카운트 증가
+  //     await db.runAsync(
+  //       'UPDATE tasks SET current_count = current_count + 1 WHERE id = ?',
+  //       [taskId]
+  //     );
+  //   });
+  // };
+
   useFocusEffect(
     useCallback(() => {
       let isActive = true;

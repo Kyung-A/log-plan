@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { Animated, Text, View } from "react-native";
 
-export const ProgressBar = ({ progress = 80 }) => {
+export const ProgressBar = ({ progress = 0 }: { progress?: number }) => {
   const animatedWidth = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {

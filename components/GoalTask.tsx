@@ -86,7 +86,7 @@ export const GoalTask = ({
           <Feather name="edit" size={18} color="#a09086" className="mx-auto" />
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => router.navigate("/detail")}
+          onPress={() => router.navigate(`/${goalId}`)}
           className="w-1/3 py-1"
         >
           <MaterialCommunityIcons

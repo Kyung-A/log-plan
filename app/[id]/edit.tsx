@@ -1,3 +1,4 @@
+import { formatDateToInsert } from "@/lib/formatDateToInsert";
 import { IGoal } from "@/types/goal";
 import { ITask } from "@/types/task";
 import Entypo from "@expo/vector-icons/Entypo";
@@ -55,7 +56,7 @@ export default function EditScreen() {
     if (!formData) return;
     const { title, end_date, tasks } = formData;
 
-    const dateString = end_date.toISOString().split("T")[0];
+    const dateString = formatDateToInsert(end_date);
 
     try {
       await db.withTransactionAsync(async () => {
@@ -131,7 +132,7 @@ export default function EditScreen() {
           mode="date"
           display="default"
           locale="ko-KR"
-          value={formData?.end_date || new Date()}
+          value={formData?.end_date ? new Date(formData.end_date) : new Date()}
           onChange={(event, date) => {
             if (date) {
               setFormData((prev) =>
@@ -273,7 +274,15 @@ export default function EditScreen() {
 
             <TextInput
               className="p-4 text-base bg-zinc-200 min-h-40"
-              defaultValue="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam aliquam lectus a lorem viverra sodales. In aliquet elit quis tellus placerat"
+              defaultValue={
+                formData?.retrospective ||
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam aliquam lectus a lorem viverra sodales. In aliquet elit quis tellus placerat"
+              }
+              onChangeText={(text) => {
+                setFormData((prev) =>
+                  prev ? { ...prev, retrospective: text } : prev,
+                );
+              }}
               multiline
               textAlignVertical="top"
             />
