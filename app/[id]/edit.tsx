@@ -55,7 +55,6 @@ export default function EditScreen() {
   const handleUpdate = async () => {
     if (!formData) return;
     const { title, end_date, tasks } = formData;
-
     const dateString = formatDateToInsert(end_date);
 
     try {
@@ -64,14 +63,21 @@ export default function EditScreen() {
           `UPDATE goals SET title = ?, end_date = ? WHERE id = ?`,
           [title, dateString, id as string],
         );
-        await db.runAsync(`DELETE FROM tasks WHERE goal_id = ?`, [
-          id as string,
-        ]);
+
+        const taskIds = tasks.map((t) => `'${t.id}'`).join(",");
+        await db.runAsync(
+          `DELETE FROM tasks WHERE goal_id = ? AND id NOT IN (${taskIds})`,
+          [id as string],
+        );
 
         for (const task of tasks) {
           await db.runAsync(
             `INSERT INTO tasks (id, goal_id, title, current_count, target_count)
-           VALUES (?, ?, ?, ?, ?)`,
+           VALUES (?, ?, ?, ?, ?)
+           ON CONFLICT(id) DO UPDATE SET
+             title = excluded.title,
+             target_count = excluded.target_count,
+             current_count = excluded.current_count`,
             [
               task.id,
               id as string,
@@ -106,7 +112,7 @@ export default function EditScreen() {
             onPress={async () => {
               const result = await handleUpdate();
               if (result) {
-                router.navigate("/");
+                router.replace("/");
               }
             }}
           >
