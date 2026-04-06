@@ -8,9 +8,11 @@ import { Alert, Pressable, Text, TouchableOpacity, View } from "react-native";
 export const GoalTask = ({
   goalId,
   task,
+  checkTask,
 }: {
   goalId: string;
   task: ITask[];
+  checkTask: (taskId: string) => Promise<void>;
 }) => {
   return (
     <View className="w-[90%] -mt-4 mx-auto -z-10">
@@ -21,9 +23,16 @@ export const GoalTask = ({
             className="flex-row items-start justify-between flex-1 px-4 py-2"
           >
             <View className="flex-row items-start flex-1 gap-x-2">
-              <Pressable className="pt-[2.5px]">
+              <Pressable
+                onPress={() => checkTask(subItem.id)}
+                className="pt-[2.5px]"
+              >
                 <MaterialIcons
-                  name="radio-button-unchecked"
+                  name={
+                    subItem.is_done_today
+                      ? "check-circle"
+                      : "radio-button-unchecked"
+                  }
                   size={20}
                   color="#a09086"
                 />
@@ -32,7 +41,9 @@ export const GoalTask = ({
                 activeOpacity={0.5}
                 onPress={() => router.push("/sub-detail")}
               >
-                <Text className="flex-1 text-lg max-w-52 text-balanc text-latte">
+                <Text
+                  className={`flex-1 text-lg max-w-52 text-balanc text-latte ${subItem.is_done_today ? "line-through" : ""}`}
+                >
                   {subItem.title}
                 </Text>
               </TouchableOpacity>

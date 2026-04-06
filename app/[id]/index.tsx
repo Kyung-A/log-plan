@@ -26,7 +26,7 @@ export default function DetailScreen() {
 
   const [data, setData] = useState<IGoal | null>(null);
   const [heatmapLogs, setHeatmapLogs] = useState<
-    { date: string; count: number }[]
+    { date: string; count_increment: number }[]
   >([]);
 
   const loadDetailData = async () => {

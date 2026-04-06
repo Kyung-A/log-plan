@@ -5,4 +5,5 @@ export interface ITask {
   target_count: number;
   current_count: number;
   created_at?: string;
+  is_done_today?: boolean;
 }

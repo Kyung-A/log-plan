@@ -5,7 +5,7 @@ import { ScrollView, Text, View } from "react-native";
 interface IHeatmapProps {
   startDate?: string;
   endDate?: Date | string;
-  logs: { date: string; count: number }[];
+  logs: { date: string; count_increment: number }[];
 }
 
 export const Heatmap = ({ startDate, endDate, logs }: IHeatmapProps) => {
@@ -28,16 +28,16 @@ export const Heatmap = ({ startDate, endDate, logs }: IHeatmapProps) => {
       const dateStr = current.format("YYYY-MM-DD");
 
       const logEntry = logs.find((l) => l.date === dateStr);
-      const count = logEntry ? logEntry.count : 0;
+      const count = logEntry ? logEntry.count_increment : 0;
 
       const isFuture = current.isAfter(today, "day");
 
       let level = 0;
       if (!isFuture) {
-        if (count > 0 && count <= 2) level = 1;
-        else if (count > 2 && count <= 5) level = 2;
-        else if (count > 5 && count <= 10) level = 3;
-        else if (count > 10) level = 4;
+        if (count > 0 && count <= 1) level = 1;
+        else if (count > 1 && count <= 3) level = 2;
+        else if (count > 3 && count <= 5) level = 3;
+        else if (count > 5) level = 4;
       }
 
       data.push({

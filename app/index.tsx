@@ -3,6 +3,7 @@ import { GoalTask } from "@/components/GoalTask";
 import { IGoal } from "@/types/goal";
 import { ITask } from "@/types/task";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import * as Crypto from "expo-crypto";
 import { router, useFocusEffect } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import { useCallback, useState } from "react";
@@ -41,17 +42,21 @@ const renderSection = ({
   item,
   expandedSections,
   setExpandedSections,
+  checkTask,
 }: {
   item: IGoal;
   expandedSections: string[];
   setExpandedSections: React.Dispatch<React.SetStateAction<string[]>>;
+  checkTask: (taskId: string) => Promise<void>;
 }) => {
   const isExpanded = expandedSections.includes(item.id);
 
   return (
     <View className="w-full mb-2">
       <Goal data={item} setExpandedSections={setExpandedSections} />
-      {isExpanded && <GoalTask goalId={item.id} task={item.tasks} />}
+      {isExpanded && (
+        <GoalTask goalId={item.id} task={item.tasks} checkTask={checkTask} />
+      )}
     </View>
   );
 };
@@ -64,36 +69,63 @@ export default function HomeScreen() {
 
   const loadData = async (isActive: boolean) => {
     try {
-      const goals = await db.getAllAsync<IGoal>(query);
-      const tasks = await db.getAllAsync<ITask>(
-        "SELECT * FROM tasks ORDER BY id ASC",
-      );
-      const result = goals.map((goal) => ({
+      const goalsResult = await db.getAllAsync<IGoal>(query);
+
+      const tasksResult = await db.getAllAsync<ITask>(`
+        SELECT 
+          t.*,
+          (SELECT COUNT(*) FROM daily_logs 
+          WHERE task_id = t.id AND log_date = date('now', 'localtime')) > 0 AS is_done_today
+        FROM tasks t 
+        ORDER BY t.id ASC
+      `);
+
+      const result = goalsResult.map((goal) => ({
         ...goal,
-        tasks: tasks.filter((task) => task.goal_id === goal.id),
+        tasks: tasksResult.filter((task) => task.goal_id === goal.id),
       }));
 
-      if (isActive) {
-        setGoals(result);
-      }
+      if (isActive) setGoals(result);
     } catch (error) {
       console.error("데이터 조회 실패:", error);
     }
   };
 
-  //   const checkTask = async (taskId: number) => {
-  //   await db.withTransactionAsync(async () => {
-  //     // 1. 일일 로그 기록 (히트맵용)
-  //     await db.runAsync('INSERT INTO daily_logs (task_id) VALUES (?)', [taskId]);
+  const checkTask = async (taskId: string) => {
+    try {
+      await db.withTransactionAsync(async () => {
+        const today = new Date().toISOString().split("T")[0];
 
-  //     // 2. 세부 계획 현재 카운트 증가
-  //     await db.runAsync(
-  //       'UPDATE tasks SET current_count = current_count + 1 WHERE id = ?',
-  //       [taskId]
-  //     );
-  //   });
-  // };
+        const existingLog = await db.getFirstAsync<{ id: string }>(
+          "SELECT id FROM daily_logs WHERE task_id = ? AND log_date = ?",
+          [taskId, today],
+        );
 
+        if (existingLog) {
+          await db.runAsync("DELETE FROM daily_logs WHERE id = ?", [
+            existingLog.id,
+          ]);
+          await db.runAsync(
+            "UPDATE tasks SET current_count = MAX(0, current_count - 1) WHERE id = ?",
+            [taskId],
+          );
+        } else {
+          await db.runAsync(
+            "INSERT INTO daily_logs (id, task_id, log_date) VALUES (?, ?, ?)",
+            [Crypto.randomUUID(), taskId, today],
+          );
+          await db.runAsync(
+            "UPDATE tasks SET current_count = current_count + 1 WHERE id = ?",
+            [taskId],
+          );
+        }
+      });
+
+      await loadData(true);
+    } catch (error) {
+      console.error("토글 실패:", error);
+    }
+  };
   useFocusEffect(
     useCallback(() => {
       let isActive = true;
@@ -130,7 +162,12 @@ export default function HomeScreen() {
         <FlatList
           data={goals}
           renderItem={({ item }) =>
-            renderSection({ item, expandedSections, setExpandedSections })
+            renderSection({
+              item,
+              expandedSections,
+              setExpandedSections,
+              checkTask,
+            })
           }
           keyExtractor={(item) => item.id}
           extraData={expandedSections}
