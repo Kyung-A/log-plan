@@ -17,26 +17,47 @@ export const GoalTask = ({
   return (
     <View className="w-[90%] -mt-4 mx-auto -z-10">
       <View className="py-4 pt-6 border rounded-bl-lg border-latte">
-        {task.map((subItem) => (
-          <View
-            key={subItem.id}
-            className="flex-row items-start justify-between flex-1 px-4 py-2"
-          >
-            <View className="flex-row items-start flex-1 gap-x-2">
-              <Pressable
-                onPress={() => checkTask(subItem.id)}
-                className="pt-[2.5px]"
-              >
-                <MaterialIcons
-                  name={
-                    subItem.is_done_today
-                      ? "check-circle"
-                      : "radio-button-unchecked"
+        {task && task.length > 0 ? (
+          task.map((subItem) => (
+            <View
+              key={subItem.id}
+              className="flex-row items-start justify-between flex-1 px-4 py-2"
+            >
+              <View className="flex-row items-start flex-1 gap-x-2">
+                <Pressable
+                  onPress={() => checkTask(subItem.id)}
+                  className="pt-[2.5px]"
+                >
+                  <MaterialIcons
+                    name={
+                      subItem.is_done_today
+                        ? "check-circle"
+                        : "radio-button-unchecked"
+                    }
+                    size={20}
+                    color="#a09086"
+                  />
+                </Pressable>
+                <TouchableOpacity
+                  activeOpacity={0.5}
+                  onPress={() =>
+                    router.navigate({
+                      pathname:
+                        `/${goalId}/${subItem.id}` as RelativePathString,
+                      params: {
+                        title: subItem.title,
+                        target_count: subItem.target_count,
+                      },
+                    })
                   }
-                  size={20}
-                  color="#a09086"
-                />
-              </Pressable>
+                >
+                  <Text
+                    className={`flex-1 text-lg max-w-52 text-balanc text-latte ${subItem.is_done_today ? "line-through" : ""}`}
+                  >
+                    {subItem.title}
+                  </Text>
+                </TouchableOpacity>
+              </View>
               <TouchableOpacity
                 activeOpacity={0.5}
                 onPress={() =>
@@ -48,41 +69,27 @@ export const GoalTask = ({
                     },
                   })
                 }
+                className="flex-row items-center justify-center"
               >
-                <Text
-                  className={`flex-1 text-lg max-w-52 text-balanc text-latte ${subItem.is_done_today ? "line-through" : ""}`}
-                >
-                  {subItem.title}
+                <Text className="text-lg text-latte">
+                  {subItem.current_count}
+                </Text>
+                <MaterialCommunityIcons
+                  name="slash-forward"
+                  size={16}
+                  color="#a09086"
+                />
+                <Text className="text-lg font-semibold text-latte">
+                  {subItem.target_count}
                 </Text>
               </TouchableOpacity>
             </View>
-            <TouchableOpacity
-              activeOpacity={0.5}
-              onPress={() =>
-                router.navigate({
-                  pathname: `/${goalId}/${subItem.id}` as RelativePathString,
-                  params: {
-                    title: subItem.title,
-                    target_count: subItem.target_count,
-                  },
-                })
-              }
-              className="flex-row items-center justify-center"
-            >
-              <Text className="text-lg text-latte">
-                {subItem.current_count}
-              </Text>
-              <MaterialCommunityIcons
-                name="slash-forward"
-                size={16}
-                color="#a09086"
-              />
-              <Text className="text-lg font-semibold text-latte">
-                {subItem.target_count}
-              </Text>
-            </TouchableOpacity>
-          </View>
-        ))}
+          ))
+        ) : (
+          <Text className="font-semibold text-center text-latte">
+            아직 등록된 계획이 없어요.
+          </Text>
+        )}
       </View>
 
       <View className="flex-row items-center w-40 ml-auto border border-t-0 rounded-b-lg border-latte">

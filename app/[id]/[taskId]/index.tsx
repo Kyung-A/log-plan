@@ -96,6 +96,17 @@ export default function TaskDetailScreen() {
     }
   };
 
+  const deleteTask = async (taskId: string) => {
+    try {
+      await db.runAsync(`DELETE FROM tasks WHERE id = ?`, [taskId]);
+      if (router.canGoBack()) {
+        router.back();
+      }
+    } catch (error) {
+      console.error("태스크 삭제 실패:", error);
+    }
+  };
+
   useEffect(() => {
     fetchTaskLogs();
   }, [taskId]);
@@ -110,10 +121,9 @@ export default function TaskDetailScreen() {
         <Pressable
           onPress={() => {
             Alert.alert("삭제", "정말 삭제하시겠습니까?", [
-              { text: "예", onPress: () => console.log("") },
+              { text: "예", onPress: () => deleteTask(taskId) },
               {
                 text: "아니오",
-                onPress: () => console.log(""),
                 style: "cancel",
               },
             ]);
