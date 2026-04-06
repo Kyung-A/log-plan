@@ -37,7 +37,7 @@ export default function RootLayout() {
             }}
           />
           <Stack.Screen
-            name="sub-detail"
+            name="[id]/[taskId]/index"
             options={{
               presentation: "modal",
             }}

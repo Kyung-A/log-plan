@@ -8,7 +8,7 @@ import Entypo from "@expo/vector-icons/Entypo";
 import Feather from "@expo/vector-icons/Feather";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { BlurView } from "expo-blur";
-import { router, useLocalSearchParams } from "expo-router";
+import { RelativePathString, router, useLocalSearchParams } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import React, { useEffect, useState } from "react";
 import {
@@ -72,7 +72,10 @@ export default function DetailScreen() {
   };
 
   const fetchHeatmap = async () => {
-    const rows = await db.getAllAsync<{ date: string; count: number }>(
+    const rows = await db.getAllAsync<{
+      date: string;
+      count_increment: number;
+    }>(
       `SELECT l.log_date AS date, SUM(l.count_increment) AS count_increment
         FROM daily_logs l
         JOIN tasks t ON l.task_id = t.id
@@ -132,7 +135,15 @@ export default function DetailScreen() {
             {data?.tasks.map((task) => (
               <TouchableOpacity
                 key={task.id}
-                onPress={() => router.navigate("/sub-detail")}
+                onPress={() =>
+                  router.navigate({
+                    pathname: `/${id}/${task.id}` as RelativePathString,
+                    params: {
+                      title: task.title,
+                      target_count: task.target_count,
+                    },
+                  })
+                }
                 className="flex-row flex-wrap items-start justify-between px-4 py-3 mb-2 rounded-full bg-zinc-200"
               >
                 <Text className="w-[66%] pr-2 text-base">{task.title}</Text>

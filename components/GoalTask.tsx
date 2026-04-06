@@ -2,7 +2,7 @@ import { ITask } from "@/types/task";
 import Feather from "@expo/vector-icons/Feather";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import { router } from "expo-router";
+import { RelativePathString, router } from "expo-router";
 import { Alert, Pressable, Text, TouchableOpacity, View } from "react-native";
 
 export const GoalTask = ({
@@ -39,7 +39,15 @@ export const GoalTask = ({
               </Pressable>
               <TouchableOpacity
                 activeOpacity={0.5}
-                onPress={() => router.push("/sub-detail")}
+                onPress={() =>
+                  router.navigate({
+                    pathname: `/${goalId}/${subItem.id}` as RelativePathString,
+                    params: {
+                      title: subItem.title,
+                      target_count: subItem.target_count,
+                    },
+                  })
+                }
               >
                 <Text
                   className={`flex-1 text-lg max-w-52 text-balanc text-latte ${subItem.is_done_today ? "line-through" : ""}`}
@@ -50,7 +58,15 @@ export const GoalTask = ({
             </View>
             <TouchableOpacity
               activeOpacity={0.5}
-              onPress={() => router.push("/sub-detail")}
+              onPress={() =>
+                router.navigate({
+                  pathname: `/${goalId}/${subItem.id}` as RelativePathString,
+                  params: {
+                    title: subItem.title,
+                    target_count: subItem.target_count,
+                  },
+                })
+              }
               className="flex-row items-center justify-center"
             >
               <Text className="text-lg text-latte">

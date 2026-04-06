@@ -1,6 +1,8 @@
 import Feather from "@expo/vector-icons/Feather";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
+import { useSQLiteContext } from "expo-sqlite";
+import { useEffect, useState } from "react";
 import { Alert, Pressable, Text, View } from "react-native";
 import { Calendar, LocaleConfig } from "react-native-calendars";
 
@@ -48,7 +50,56 @@ LocaleConfig.locales["ko"] = {
 
 LocaleConfig.defaultLocale = "ko";
 
-export default function SubDetailScreen() {
+interface IMarkedDates {
+  [date: string]: {
+    selected: boolean;
+    selectedColor: string;
+    textColor: string;
+  };
+}
+
+export default function TaskDetailScreen() {
+  const { taskId, target_count, title } = useLocalSearchParams<{
+    taskId: string;
+    target_count: string;
+    title: string;
+  }>();
+  const db = useSQLiteContext();
+  const [markedDates, setMarkedDates] = useState<IMarkedDates>({});
+  const [totalCount, setTotalCount] = useState(0);
+
+  const fetchTaskLogs = async () => {
+    try {
+      const logs = await db.getAllAsync<{ log_date: string }>(
+        "SELECT log_date FROM daily_logs WHERE task_id = ? ORDER BY log_date ASC",
+        [taskId],
+      );
+
+      const taskInfo = await db.getFirstAsync<{ current_count: number }>(
+        "SELECT current_count FROM tasks WHERE id = ?",
+        [taskId],
+      );
+
+      const marked: IMarkedDates = {};
+      logs.forEach((log) => {
+        marked[log.log_date] = {
+          selected: true,
+          selectedColor: "#c39d97",
+          textColor: "white",
+        };
+      });
+
+      setMarkedDates(marked);
+      setTotalCount(taskInfo?.current_count || 0);
+    } catch (error) {
+      console.error("로그 조회 실패:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchTaskLogs();
+  }, [taskId]);
+
   return (
     <View className="flex-1 p-6 bg-beige">
       <View className="flex-row items-center justify-between pb-6">
@@ -72,7 +123,7 @@ export default function SubDetailScreen() {
         </Pressable>
       </View>
 
-      <Text className="text-2xl font-semibold">스피닝 100회 하기</Text>
+      <Text className="text-2xl font-semibold">{title}</Text>
 
       <View className="mt-6 overflow-hidden border rounded-lg border-latte">
         <Calendar
@@ -83,36 +134,9 @@ export default function SubDetailScreen() {
             calendarBackground: "#f1eeeb",
             arrowColor: "#a09086",
             monthTextColor: "#a09086",
+            todayTextColor: "#FF6B6B",
           }}
-          markingType={"period"}
-          markedDates={{
-            "2026-03-15": {
-              startingDay: true,
-              color: "#c39d97",
-              textColor: "white",
-            },
-            "2026-03-16": {
-              endingDay: true,
-              color: "#c39d97",
-              textColor: "white",
-            },
-            "2026-03-21": {
-              startingDay: true,
-              color: "#c39d97",
-              textColor: "white",
-            },
-            "2026-03-22": { color: "#c39d97", textColor: "white" },
-            "2026-03-23": {
-              color: "#c39d97",
-              textColor: "white",
-            },
-            "2026-03-24": { color: "#c39d97", textColor: "white" },
-            "2026-03-25": {
-              endingDay: true,
-              color: "#c39d97",
-              textColor: "white",
-            },
-          }}
+          markedDates={markedDates}
           enableSwipeMonths={true}
         />
       </View>
@@ -121,14 +145,14 @@ export default function SubDetailScreen() {
         <Text className="text-lg font-semibold">완료 횟수</Text>
 
         <View className="flex-row items-center">
-          <Text className="text-lg">10</Text>
+          <Text className="text-lg">{totalCount}</Text>
           <MaterialCommunityIcons
             name="slash-forward"
             size={16}
             color="#a1a1aa"
           />
 
-          <Text className="text-lg">50</Text>
+          <Text className="text-lg">{target_count}</Text>
         </View>
       </View>
     </View>
