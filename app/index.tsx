@@ -43,11 +43,13 @@ const renderSection = ({
   expandedSections,
   setExpandedSections,
   checkTask,
+  deleteGoal,
 }: {
   item: IGoal;
   expandedSections: string[];
   setExpandedSections: React.Dispatch<React.SetStateAction<string[]>>;
   checkTask: (taskId: string) => Promise<void>;
+  deleteGoal: (goalId: string) => Promise<void>;
 }) => {
   const isExpanded = expandedSections.includes(item.id);
 
@@ -55,7 +57,12 @@ const renderSection = ({
     <View className="w-full mb-2">
       <Goal data={item} setExpandedSections={setExpandedSections} />
       {isExpanded && (
-        <GoalTask goalId={item.id} task={item.tasks} checkTask={checkTask} />
+        <GoalTask
+          goalId={item.id}
+          task={item.tasks}
+          checkTask={checkTask}
+          deleteGoal={deleteGoal}
+        />
       )}
     </View>
   );
@@ -126,6 +133,18 @@ export default function HomeScreen() {
       console.error("토글 실패:", error);
     }
   };
+
+  const deleteGoal = async (goalId: string) => {
+    try {
+      await db.execAsync("PRAGMA foreign_keys = ON;");
+      await db.runAsync(`DELETE FROM goals WHERE id = ?`, [goalId]);
+
+      await loadData(true);
+    } catch (error) {
+      console.error("목표 삭제 실패:", error);
+    }
+  };
+
   useFocusEffect(
     useCallback(() => {
       let isActive = true;
@@ -167,6 +186,7 @@ export default function HomeScreen() {
               expandedSections,
               setExpandedSections,
               checkTask,
+              deleteGoal,
             })
           }
           keyExtractor={(item) => item.id}

@@ -9,10 +9,12 @@ export const GoalTask = ({
   goalId,
   task,
   checkTask,
+  deleteGoal,
 }: {
   goalId: string;
   task: ITask[];
   checkTask: (taskId: string) => Promise<void>;
+  deleteGoal: (goalId: string) => Promise<void>;
 }) => {
   return (
     <View className="w-[90%] -mt-4 mx-auto -z-10">
@@ -96,10 +98,9 @@ export const GoalTask = ({
         <TouchableOpacity
           onPress={() => {
             Alert.alert("삭제", "정말 삭제하시겠습니까?", [
-              { text: "예", onPress: () => console.log("") },
+              { text: "예", onPress: () => deleteGoal(goalId) },
               {
                 text: "아니오",
-                onPress: () => console.log(""),
                 style: "cancel",
               },
             ]);
